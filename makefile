@@ -9,7 +9,6 @@ CWARNSCPP= \
 	-Wextra \
 	-Wshadow \
 	-Wsign-compare \
-	-Wundef \
 	-Wwrite-strings \
 	-Wredundant-decls \
 	-Wdisabled-optimization \
@@ -18,6 +17,7 @@ CWARNSCPP= \
 	-Wno-aggressive-loop-optimizations \
         # the next warnings might be useful sometimes,
 	# but usually they generate too much noise
+	# -Wundef \
 	# -Werror \
 	# -pedantic   # warns if we use jump tables \
 	# -Wconversion  \
@@ -30,9 +30,9 @@ CWARNSCPP= \
 CWARNSC= -Wdeclaration-after-statement \
 	-Wmissing-prototypes \
 	-Wnested-externs \
-	-Wstrict-prototypes \
-	-Wc++-compat \
 	-Wold-style-definition \
+	# -Wstrict-prototypes \
+	# -Wc++-compat \
 
 
 CWARNS= $(CWARNSCPP) $(CWARNSC)
@@ -62,7 +62,7 @@ CWARNS= $(CWARNSCPP) $(CWARNSC)
 COSMO_LIBDIR= ./libcosmo
 
 COSMO_PREFLAGS= -static -nostdlib -nostdinc -fno-pie -no-pie -mno-red-zone
-COSMO_CFLAGS= -static -nostdlib -nostdinc -mno-red-zone -Iinclude/ -include $(COSMO_LIBDIR)/cosmopolitan.h
+COSMO_CFLAGS= -nostdlib -nostdinc -Iinclude/ -include $(COSMO_LIBDIR)/cosmopolitan.h
 COSMO_POSTFLAGS= -fuse-ld=bfd -Wl,-T,$(COSMO_LIBDIR)/ape.lds
 COSMO_FILES= $(COSMO_LIBDIR)/cosmopolitan.h $(COSMO_LIBDIR)/crt.o $(COSMO_LIBDIR)/ape.o $(COSMO_LIBDIR)/cosmopolitan.a
 
@@ -73,8 +73,8 @@ LOCAL = $(TESTS) $(CWARNS)
 
 # disable readline because less hassle
 # MYCFLAGS= $(LOCAL) -std=c99 -DLUA_USE_LINUX -DLUA_USE_READLINE
-MYCFLAGS = -Wextra -std=c99 -DLUA_USE_LINUX -DLUA_COMPAT_5_3 $(COSMO_CFLAGS)
-MYLDFLAGS= $(COSMO_PREFLAGS)
+MYCFLAGS = -g3 $(LOCAL) -std=c99 -DLUA_USE_LINUX -DLUA_COMPAT_5_3 $(COSMO_CFLAGS)
+MYLDFLAGS= $(LOCAL) $(COSMO_PREFLAGS)
 MYLIBS= $(COSMO_POSTFLAGS) -include $(COSMO_FILES)
 
 
