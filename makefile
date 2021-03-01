@@ -56,16 +56,28 @@ CWARNS= $(CWARNSCPP) $(CWARNSC)
 # TESTS= -DLUA_USER_H='"ltests.h"' -O0 -g
 
 
+## Additional flags for compiling with cosmopolitan
+
+## change the below line to location of cosmopolitan.h (and all related files)
+COSMO_LIBDIR= ./libcosmo
+
+COSMO_PREFLAGS= -static -nostdlib -nostdinc -fno-pie -no-pie -mno-red-zone
+COSMO_CFLAGS= -static -nostdlib -nostdinc -mno-red-zone -Iinclude/ -include $(COSMO_LIBDIR)/cosmopolitan.h
+COSMO_POSTFLAGS= -fuse-ld=bfd -Wl,-T,$(COSMO_LIBDIR)/ape.lds
+COSMO_FILES= $(COSMO_LIBDIR)/cosmopolitan.h $(COSMO_LIBDIR)/crt.o $(COSMO_LIBDIR)/ape.o $(COSMO_LIBDIR)/cosmopolitan.a
+
+
+
 LOCAL = $(TESTS) $(CWARNS)
 
 
-# enable Linux goodies
-MYCFLAGS= $(LOCAL) -std=c99 -DLUA_USE_LINUX -DLUA_USE_READLINE
-MYLDFLAGS= $(LOCAL) -Wl,-E
-MYLIBS= -ldl -lreadline
+# disable readline because less hassle
+# MYCFLAGS= $(LOCAL) -std=c99 -DLUA_USE_LINUX -DLUA_USE_READLINE
+MYCFLAGS = -Wextra -std=c99 -DLUA_USE_LINUX -DLUA_COMPAT_5_3 $(COSMO_CFLAGS)
+MYLDFLAGS= $(COSMO_PREFLAGS)
+MYLIBS= $(COSMO_POSTFLAGS) -include $(COSMO_FILES)
 
 
-CC= gcc
 CFLAGS= -Wall -O2 $(MYCFLAGS) -fno-stack-protector -fno-common -march=native
 AR= ar rc
 RANLIB= ranlib
@@ -75,8 +87,8 @@ RM= rm -f
 
 # == END OF USER SETTINGS. NO NEED TO CHANGE ANYTHING BELOW THIS LINE =========
 
-
-LIBS = -lm
+# cosmopolitan.a contains math functions, so no -lm
+LIBS =
 
 CORE_T=	liblua.a
 CORE_O=	lapi.o lcode.o lctype.o ldebug.o ldo.o ldump.o lfunc.o lgc.o llex.o \
@@ -86,11 +98,12 @@ AUX_O=	lauxlib.o
 LIB_O=	lbaselib.o ldblib.o liolib.o lmathlib.o loslib.o ltablib.o lstrlib.o \
 	lutf8lib.o loadlib.o lcorolib.o linit.o
 
+LUA_EXE= lua.exe
 LUA_T=	lua
 LUA_O=	lua.o
 
 
-ALL_T= $(CORE_T) $(LUA_T)
+ALL_T= $(CORE_T) $(LUA_T) $(LUA_EXE)
 ALL_O= $(CORE_O) $(LUA_O) $(AUX_O) $(LIB_O)
 ALL_A= $(CORE_T)
 
@@ -108,6 +121,8 @@ $(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O)
 $(LUA_T): $(LUA_O) $(CORE_T)
 	$(CC) -o $@ $(MYLDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
 
+$(LUA_EXE): $(LUA_T)
+	objcopy -S -O binary $(LUA_T) $(LUA_EXE)
 
 clean:
 	$(RM) $(ALL_T) $(ALL_O)

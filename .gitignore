@@ -13,3 +13,7 @@ testes/libs/all
 
 temp
 lua
+lua.exe
+
+libcosmo/*
+!libcosmo/README.md

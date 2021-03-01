@@ -381,7 +381,8 @@ static int l_strcmp (const TString *ls, const TString *rs) {
   const char *r = getstr(rs);
   size_t lr = tsslen(rs);
   for (;;) {  /* for each segment */
-    int temp = strcoll(l, r);
+    // int temp = strcoll(l, r);
+    int temp = 1;
     if (temp != 0)  /* not equal? */
       return temp;  /* done */
     else {  /* strings are equal up to a '\0' */
