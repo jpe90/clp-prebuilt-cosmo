@@ -722,7 +722,7 @@ static int skipBOM (LoadF *lf) {
   int c;
   lf->n = 0;
   do {
-    c = getc(lf->f);
+    c = fgetc(lf->f);
     if (c == EOF || c != *(const unsigned char *)p++) return c;
     lf->buff[lf->n++] = c;  /* to be read by the parser */
   } while (*p != '\0');
