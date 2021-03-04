@@ -3,7 +3,7 @@
 This is a fork of the Github repo for [Lua][lua] customized to compile with
 [Cosmopolitan][cosmo] libc.  Meant for experimental purposes only. The `include`
 folder contains dummy headers corresponding to the [C stdlib][cstdlib]. The
-`cosmopolitan` folder contains the required files for compiling an executable
+`libcosmo` folder contains the required files for compiling an executable
 using Cosmopolitan on Linux.
 
 Compiled on:
@@ -29,12 +29,12 @@ larger binary than `gcc`.
 
 1. Compile the latest commit in the `master` branch of `Cosmopolitan`.
 2. Copy `cosmopolitan.h` (and `crt.o`, `ape.o`, `ape.lds`, `cosmopolitan.a`) to
-   the `cosmopolitan/` folder.
+   the `libcosmo/` folder.
 3. Run `make`
 4. Run `lua.exe`
 
 ```bash
-cd cosmopolitan/
+cd libcosmo/
 # use the latest version
 wget https://justine.lol/cosmopolitan/cosmopolitan-amalgamation-0.2.zip
 unzip cosmopolitan-amalgamation-0.2.zip

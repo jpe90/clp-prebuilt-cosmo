@@ -61,8 +61,8 @@ CWARNS= $(CWARNSCPP) $(CWARNSC)
 ## change the below line to location of cosmopolitan.h (and all related files)
 COSMO_LIBDIR= ./libcosmo
 
-COSMO_PREFLAGS= -static -nostdlib -nostdinc -fno-pie -no-pie -mno-red-zone
-COSMO_CFLAGS= -nostdlib -nostdinc -Iinclude/ -include $(COSMO_LIBDIR)/cosmopolitan.h
+COSMO_PREFLAGS= -static -nostdlib -nostdinc -fno-pie -no-pie -mno-red-zone -fno-omit-frame-pointer -pg -mnop-mcount
+COSMO_CFLAGS= $(COSMO_PREFLAGS) -Iinclude/ -include $(COSMO_LIBDIR)/cosmopolitan.h
 COSMO_POSTFLAGS= -fuse-ld=bfd -Wl,-T,$(COSMO_LIBDIR)/ape.lds
 COSMO_FILES= $(COSMO_LIBDIR)/cosmopolitan.h $(COSMO_LIBDIR)/crt.o $(COSMO_LIBDIR)/ape.o $(COSMO_LIBDIR)/cosmopolitan.a
 
@@ -79,7 +79,7 @@ MYLDFLAGS= $(COSMO_PREFLAGS) $(LOCAL)
 MYLIBS= $(COSMO_POSTFLAGS) -include $(COSMO_FILES)
 
 
-CFLAGS= -Wall -O2 $(MYCFLAGS) -fno-stack-protector -fno-common -march=native
+CFLAGS= -Wall $(MYCFLAGS) -fno-stack-protector -fno-common -march=native
 AR= ar rc
 RANLIB= ranlib
 RM= rm -f
