@@ -170,8 +170,8 @@ do  -- tests for '%p' format
   assert(string.format("%p", print) == string.format("%p", print))
   assert(string.format("%p", print) ~= string.format("%p", assert))
 
-  -- assert(#string.format("%90p", {}) == 90)
-  -- assert(#string.format("%-60p", {}) == 60)
+  assert(#string.format("%90p", {}) == 90)
+  assert(#string.format("%-60p", {}) == 60)
   assert(string.format("%10p", false) == string.rep(" ", 10 - #null) .. null)
   assert(string.format("%-12p", 1.5) == null .. string.rep(" ", 12 - #null))
 
@@ -392,7 +392,7 @@ if not _port then
   local locales = { "ptb", "pt_BR.iso88591", "ISO-8859-1" }
   local function trylocale (w)
     for i = 1, #locales do
-      if false and os.setlocale(locales[i], w) then
+      if os.setlocale(locales[i], w) then
         print(string.format("'%s' locale set to '%s'", w, locales[i]))
         return locales[i]
       end

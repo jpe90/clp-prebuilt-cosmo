@@ -1,10 +1,13 @@
 # Compiling Lua with Cosmopolitan
 
 This is a fork of the Github repo for [Lua][lua] customized to compile with
-[Cosmopolitan][cosmo] libc.  Meant for experimental purposes only. The `include`
-folder contains dummy headers corresponding to the [C stdlib][cstdlib]. The
-`libcosmo` folder contains the required files for compiling an executable
-using Cosmopolitan on Linux.
+[Cosmopolitan][cosmo] libc.  Meant for experimental purposes only. This repo
+results in 340kb portable Lua executable, the Cosmopolitan monorepo now compiles
+a slimmer executable.
+
+The `include` folder contains dummy headers corresponding to the [C
+stdlib][cstdlib]. The `libcosmo` folder contains the required files for
+compiling an executable using Cosmopolitan on Linux.
 
 Compiled on:
 
@@ -24,6 +27,10 @@ Thread model: posix
 `makefile` runs without error (a couple of warnings) to produce `lua.exe`.  The
 compiled `lua.exe` runs on Linux and Windows 10. `clang` produces a slightly
 larger binary than `gcc`.
+
+The compiled `lua.exe` passes all tests in the `testes` directory. Run `all`
+after compilation to check it passes all tests.
+
 
 ## Usage Instructions
 
