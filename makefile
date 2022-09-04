@@ -27,7 +27,7 @@ CWARNSCPP= \
 	# -Wcast-qual \
 
 # The next warnings are neither valid nor needed for C++
-CWARNSC= -Wdeclaration-after-statement \
+CWARNSC= -Wno-declaration-after-statement \
 	-Wmissing-prototypes \
 	-Wnested-externs \
 	-Wold-style-definition \
@@ -67,7 +67,6 @@ COSMO_POSTFLAGS= -fuse-ld=bfd -Wl,-T,$(COSMO_LIBDIR)/ape.lds
 COSMO_FILES= $(COSMO_LIBDIR)/cosmopolitan.h $(COSMO_LIBDIR)/crt.o $(COSMO_LIBDIR)/ape.o $(COSMO_LIBDIR)/cosmopolitan.a
 
 
-
 LOCAL = $(TESTS) $(CWARNS)
 
 
@@ -76,7 +75,7 @@ LOCAL = $(TESTS) $(CWARNS)
 # MYCFLAGS= $(LOCAL) -std=c99 -DLUA_USE_LINUX -DLUA_USE_READLINE
 MYCFLAGS = -g3 -std=c99 -DLUA_USE_POSIX -DLUA_COMPAT_5_3 $(COSMO_CFLAGS) $(LOCAL)
 MYLDFLAGS= $(COSMO_PREFLAGS) $(LOCAL)
-MYLIBS= $(COSMO_POSTFLAGS) -include $(COSMO_FILES)
+MYLIBS= $(COSMO_POSTFLAGS) -include $(COSMO_FILES) optparse.h
 
 
 CFLAGS= -Wall $(MYCFLAGS) -fno-stack-protector -fno-common -march=native
@@ -99,31 +98,36 @@ AUX_O=	lauxlib.o
 LIB_O=	lbaselib.o ldblib.o liolib.o lmathlib.o loslib.o ltablib.o lstrlib.o \
 	lutf8lib.o loadlib.o lcorolib.o linit.o
 
-LUA_EXE= lua.exe
-LUA_T=	lua
-LUA_O=	lua.o
+LPEG_O= lpcap.o lpcode.o lpprint.o lptree.o lpvm.o 
+
+CLP_COM= clp.com
+CLP_T=	clp
+CLP_O=	main.o
 
 
-ALL_T= $(CORE_T) $(LUA_T) $(LUA_EXE)
-ALL_O= $(CORE_O) $(LUA_O) $(AUX_O) $(LIB_O)
+ALL_T= $(CORE_T) $(CLP_T) $(CLP_COM)
+ALL_O= $(CORE_O) $(CLP_O) $(AUX_O) $(LIB_O) $(LPEG_O)
 ALL_A= $(CORE_T)
 
-all:	$(ALL_T)
+all:	$(ALL_T) zip
 	touch all
+
+zip: $(ALL_T)
+	zip -r $(CLP_COM) .lua
 
 o:	$(ALL_O)
 
 a:	$(ALL_A)
 
-$(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O)
+$(CORE_T): $(CORE_O) $(AUX_O) $(LIB_O) $(LPEG_O)
 	$(AR) $@ $?
 	$(RANLIB) $@
 
-$(LUA_T): $(LUA_O) $(CORE_T)
-	$(CC) -o $@ $(MYLDFLAGS) $(LUA_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
+$(CLP_T): $(CLP_O) $(CORE_T)
+	$(CC) -o $@ $(MYLDFLAGS) $(CLP_O) $(CORE_T) $(LIBS) $(MYLIBS) $(DL)
 
-$(LUA_EXE): $(LUA_T)
-	objcopy -S -O binary $(LUA_T) $(LUA_EXE)
+$(CLP_COM): $(CLP_T)
+	objcopy -S -O binary $(CLP_T) $(CLP_COM)
 
 clean:
 	$(RM) $(ALL_T) $(ALL_O)
@@ -212,5 +216,15 @@ lvm.o: lvm.c lprefix.h lua.h luaconf.h ldebug.h lstate.h lobject.h \
  ltable.h lvm.h ljumptab.h
 lzio.o: lzio.c lprefix.h lua.h luaconf.h llimits.h lmem.h lstate.h \
  lobject.h ltm.h lzio.h
+lpcap.o: lpcap.c lua.h luaconf.h lauxlib.h lpcap.h lptypes.h
+lpcode.o: lpcode.c lua.h luaconf.h lauxlib.h lptypes.h lpcode.h lptree.h \
+ lpvm.h lpcap.h
+lpprint.o: lpprint.c lptypes.h lua.h luaconf.h lpprint.h lptree.h lpvm.h \
+ lpcap.h lpcode.h
+lptree.o: lptree.c lua.h luaconf.h lauxlib.h lptypes.h lpcap.h lpcode.h \
+ lptree.h lpvm.h lpprint.h
+lpvm.o: lpvm.c lua.h luaconf.h lauxlib.h lpcap.h lptypes.h lpvm.h \
+ lpprint.h lptree.h
+
 
 # (end of Makefile)
